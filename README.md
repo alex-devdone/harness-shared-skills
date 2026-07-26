@@ -340,9 +340,13 @@ pattern, not the contents.
 | [`shared-skill`](skills/shared-skill/SKILL.md) | **Manages this pattern.** Links and unlinks a skill into a project, moves a project or global skill to shared, and handles the git-index and exclude steps in the right order. This is the one to install first. |
 | [`herdr`](skills/herdr/SKILL.md) | Drive [herdr](https://herdr.dev) from inside it — panes, tabs, spawning agents, waiting on state. Includes [remote-agent detection](skills/herdr/references/remote-agents.md) for agents behind ssh. |
 | [`tmux`](skills/tmux/SKILL.md) | tmux reference for long-running agents, plus the [`tmux.conf`](skills/tmux/tmux.conf) it documents and a [notification-badge helper](skills/tmux/bin/tmux-badge). |
-| [`shipped-where`](skills/shipped-where/SKILL.md) | "Is this commit on stage or prod, and when did it land?" for any repo with a dev → stage → main promotion flow. |
-| [`port-pr-to-branch`](skills/port-pr-to-branch/SKILL.md) | Cherry-pick an existing PR onto another branch as a new PR, without rebasing or force-pushing. |
 | [`raycast-macos-extensions`](skills/raycast-macos-extensions/SKILL.md) | Building Raycast extensions with deep macOS integration — menu-bar lifecycle, CoreAudio patterns. |
+
+Note what is *not* here: anything shaped by one workplace's conventions. A skill
+that assumes a particular branching model, ticket prefix, or deploy pipeline is
+a good shared skill — it just belongs in your own `~/.shared-skills`, not in a
+public repo where its premise doesn't hold. That distinction is worth making
+early, because most of the skills you write will be that kind.
 
 ---
 
