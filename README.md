@@ -8,9 +8,12 @@ across 8 repos, 27 git worktrees, and 2 machines: 46 skills stored once, reached
 by 538 symlinks, invisible to every repo's git history, and identical on every
 machine I ssh into.
 
-It ships one reference implementation — the [`shared-skill`](skills/shared-skill/SKILL.md)
-skill, which performs the linking and git-excluding — plus [config
-templates](templates/). Everything else here is explanation.
+**Managing it:** the [`shared-skill`](skills/shared-skill/SKILL.md) skill does the
+linking and git-excluding for you — that is the one piece you actually install.
+**Syncing it:** [SYNCTHING.md](SYNCTHING.md) is the cross-machine setup, and
+[`templates/`](templates/) holds the ignore configs.
+[`skills/`](skills/) carries a few real skills as worked examples.
+Everything else here is explanation.
 
 ---
 
@@ -165,48 +168,24 @@ The ignore config itself is split so the rules can propagate without freezing:
 `.stignore` is per-device and does nothing but `#include .stignore-shared`,
 which *is* synced. Shared rules reach every peer; machine-specific ones stay put.
 
-See [`templates/stignore-shared`](templates/stignore-shared).
+**→ [SYNCTHING.md](SYNCTHING.md) is the full setup** — pairing, the folder
+settings that matter (`ignorePerms` is the one that bites), verification, and
+the conflict gotchas. Ignore rules: [`templates/stignore-shared`](templates/stignore-shared).
 
 ---
 
 ## The ssh half
 
-Once skills are identical on both machines, agents running *on the remote*
-already have every capability the local ones do. What's left is being able to
-see and drive them from one screen.
+Once skills are identical on both machines, an agent running *on the remote*
+already has every capability the local one does. It is not a degraded
+environment — it is the same environment. That is the real payoff of syncing
+the folder rather than just backing it up.
 
-```mermaid
-flowchart TD
-    subgraph L["laptop"]
-        H["herdr<br/><i>pane multiplexer</i>"]
-        SB["agents sidebar"]
-    end
-
-    subgraph R["remote machine"]
-        RS["~/.shared-skills/<br/><i>same 46 skills, via Syncthing</i>"]
-        RA["remote agent"]
-    end
-
-    H -->|sshl / herdrl<br/>auto-reconnecting| RA
-    RS --> RA
-    RA -->|"herdr-remote-agent-watch<br/>reports name + status"| SB
-```
-
-The remote agent has the same skills because Syncthing put them there. The
-connection survives laptop sleep because the wrapper reconnects. And the remote
-agent appears in the local sidebar with live status, so a machine you're not
-looking at isn't a black box.
-
-Each piece is its own repo:
-
-| | |
-|---|---|
-| [`sshl`](https://github.com/alex-devdone/sshl) | auto-reconnecting ssh into a persistent remote tmux session |
-| [`herdrl`](https://github.com/alex-devdone/herdrl) | the same for attaching a remote [herdr](https://herdr.dev) server |
-| [`herdr-remote-agent-watch`](https://github.com/alex-devdone/herdr-remote-agent-watch) | surfaces an agent running behind ssh as a live agent in the local sidebar |
-| [`herdr-sched`](https://github.com/alex-devdone/herdr-sched) | schedule a message to be typed into a pane later |
-
----
+Getting there needs a connection that survives laptop sleep;
+[`sshl`](https://github.com/alex-devdone/sshl) (ssh into a persistent remote
+tmux session) and [`herdrl`](https://github.com/alex-devdone/herdrl) (the same
+for a remote [herdr](https://herdr.dev) server) are what I use, but any stable
+remote shell does the job.
 
 ## Where should a new skill live?
 
@@ -282,6 +261,23 @@ Things that actually bit, in the order they bit:
     [ -e "$e" ] || echo "stale: $e"
   done
   ```
+
+---
+
+## The skills in here
+
+A few real ones from my own `~/.shared-skills`, as worked examples of what a
+shared skill looks like. Copy what is useful; the point of the repo is the
+pattern, not the contents.
+
+| Skill | What it does |
+|---|---|
+| [`shared-skill`](skills/shared-skill/SKILL.md) | **Manages this pattern.** Links and unlinks a skill into a project, moves a project or global skill to shared, and handles the git-index and exclude steps in the right order. This is the one to install first. |
+| [`herdr`](skills/herdr/SKILL.md) | Drive [herdr](https://herdr.dev) from inside it — panes, tabs, spawning agents, waiting on state. Includes [remote-agent detection](skills/herdr/references/remote-agents.md) for agents behind ssh. |
+| [`tmux`](skills/tmux/SKILL.md) | tmux reference for long-running agents, plus the [`tmux.conf`](skills/tmux/tmux.conf) it documents and a [notification-badge helper](skills/tmux/bin/tmux-badge). |
+| [`shipped-where`](skills/shipped-where/SKILL.md) | "Is this commit on stage or prod, and when did it land?" for any repo with a dev → stage → main promotion flow. |
+| [`port-pr-to-branch`](skills/port-pr-to-branch/SKILL.md) | Cherry-pick an existing PR onto another branch as a new PR, without rebasing or force-pushing. |
+| [`raycast-macos-extensions`](skills/raycast-macos-extensions/SKILL.md) | Building Raycast extensions with deep macOS integration — menu-bar lifecycle, CoreAudio patterns. |
 
 ---
 
