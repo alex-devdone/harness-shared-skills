@@ -1,0 +1,39 @@
+// Shared Syncthing ignore rules — synced across all peers.
+// Per-device .stignore should reference this with `#include .stignore-shared`.
+
+// Git internals — MUST NOT sync.
+// Each machine keeps its own .git, so the two peers never fight over one index
+// and a mid-write repo state is never replicated.
+.git
+
+// Secrets — never sync
+.env
+
+// Editor / OS noise
+.DS_Store
+*.swp
+*.swo
+
+// macOS / iCloud noise
+.icloud
+*.icloud
+*.sync-conflict-*
+
+// Logs
+*.log
+
+// --- Per-skill exclusions -------------------------------------------------
+// Anything a skill GENERATES rather than sources. Diverging between machines
+// is fine (or desirable) for these, and syncing them causes conflicts.
+//
+// Cooldown / run-state files — each machine tracks its own last run:
+// <skill>/state/last-runs.json
+//
+// Generated data + backup snapshots from a cron that runs on one machine only:
+// <skill>/data.bak-*.json
+//
+// Skill-local node_modules — environment-specific, rebuild locally:
+// <skill>/node_modules
+//
+// Per-machine reference material (screenshot dumps, scratch captures):
+// <skill>/reference-screenshots/*

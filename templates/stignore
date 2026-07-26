@@ -1,0 +1,8 @@
+// Per-device Syncthing ignore for ~/.shared-skills.
+// This file is NOT synced — each machine keeps its own copy.
+// All shared rules live in .stignore-shared (which IS synced across peers).
+//
+// Add machine-specific rules ABOVE the include if needed, e.g. a skill whose
+// generated data only makes sense on the machine that produces it.
+
+#include .stignore-shared

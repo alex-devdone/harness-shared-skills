@@ -1,0 +1,41 @@
+# .gitignore for the ~/.shared-skills folder itself.
+#
+# This is the PRIVATE repo that versions your shared skills — not any consuming
+# project. Consuming projects need no .gitignore entry at all; they use
+# .git/info/exclude so the rule stays local and uncommitted.
+
+# Secrets — also excluded from Syncthing (see .stignore-shared)
+.env
+*.db
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.swo
+
+# iCloud sync artifacts
+.icloud
+*.icloud
+*.sync-conflict-*
+
+# Syncthing internals
+.stfolder/
+.stversions/
+
+# .stignore is per-device — .stignore-shared IS tracked, and every machine
+# #includes it from its own .stignore.
+.stignore
+
+# Python bytecode from skill helper scripts
+__pycache__/
+
+# --- Generated skill output ------------------------------------------------
+# Skills that write reports, screenshots, embeddings, or run-state produce
+# content that is not source. Keep the directory tracked with a .gitkeep and
+# ignore what lands in it, so a fresh clone has somewhere to write.
+#
+# <skill>/reports/*
+# !<skill>/reports/.gitkeep
+# <skill>/state/last-runs.json
+# <skill>/data/*.json
+# <skill>/node_modules
