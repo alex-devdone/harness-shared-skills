@@ -12,8 +12,8 @@ machine I ssh into.
 linking and git-excluding for you — that is the one piece you actually install.
 **Syncing it:** [SYNCTHING.md](SYNCTHING.md) is the cross-machine setup, and
 [`templates/`](templates/) holds the ignore configs.
-[`skills/`](skills/) carries a few real skills as worked examples.
-Everything else here is explanation.
+Everything else here is explanation — and deliberately no skills; see
+[below](#why-the-skills-themselves-arent-in-here).
 
 ---
 
@@ -201,9 +201,13 @@ dated note per insight — `learnings/2026-07-26-slug.md` — and reuses applica
 notes on the way in. Cheap, immediate, no judgement required about whether the
 insight matters yet.
 
-**Consolidate** runs on a schedule — mine is nightly at 22:00, weekly works too.
-It scans the day's sessions, finds *recurring* learnings, and folds them into
-the actual skill files. Then it prunes what went stale and logs what it did.
+**Consolidate** runs on a schedule — **end of day or end of week**, and the
+choice is mostly about volume. Nightly (mine runs at 22:00) keeps each run small
+and the skills never more than a day stale. Weekly gives recurrence more to work
+with, since a pattern needs to happen twice before it earns promotion — on a
+quiet week, nightly runs mostly find nothing. Either way it scans the period's
+sessions, folds recurring learnings into the actual skill files, prunes what
+went stale, and logs what it did.
 
 ### What I learned building this loop
 
@@ -327,26 +331,54 @@ Things that actually bit, in the order they bit:
   done
   ```
 
+- **A host outside the sync mesh rots, and nothing tells you.** This is the one
+  that surprised me. I checked my own three remote hosts while writing this up:
+  one is a real Syncthing peer, one had two hand-copied skills, and one — a
+  Linux box I ssh into regularly — had no Syncthing at all. Its
+  `~/.shared-skills` was a manual copy from **five weeks earlier**: 25 skills
+  against 46 locally, missing everything added since, still carrying skills I
+  had deleted.
+
+  Combined with the improvement loop, this is worse than it sounds. A stale host
+  is not merely missing skills — it has missed *every nightly consolidation*, so
+  the skills it does have are the versions from before you fixed them. The agent
+  there is confidently working from what you used to believe, and nothing about
+  the setup surfaces that.
+
+  Audit it explicitly; a host you never checked is a host that drifted:
+
+  ```bash
+  for h in host-a host-b; do
+    printf "%s: " "$h"
+    ssh "$h" '[ -d ~/.shared-skills/.stfolder ] && echo "synced ($(ls ~/.shared-skills | wc -l) entries)" || echo "NOT SYNCED"'
+  done
+  ```
+
 ---
 
-## The skills in here
+## Why the skills themselves aren't in here
 
-A few real ones from my own `~/.shared-skills`, as worked examples of what a
-shared skill looks like. Copy what is useful; the point of the repo is the
-pattern, not the contents.
+There are no skills in this repo beyond [`shared-skill`](skills/shared-skill/SKILL.md),
+and that is a consequence of the section above, not an oversight.
 
-| Skill | What it does |
-|---|---|
-| [`shared-skill`](skills/shared-skill/SKILL.md) | **Manages this pattern.** Links and unlinks a skill into a project, moves a project or global skill to shared, and handles the git-index and exclude steps in the right order. This is the one to install first. |
-| [`herdr`](skills/herdr/SKILL.md) | Drive [herdr](https://herdr.dev) from inside it — panes, tabs, spawning agents, waiting on state. Includes [remote-agent detection](skills/herdr/references/remote-agents.md) for agents behind ssh. |
-| [`tmux`](skills/tmux/SKILL.md) | tmux reference for long-running agents, plus the [`tmux.conf`](skills/tmux/tmux.conf) it documents and a [notification-badge helper](skills/tmux/bin/tmux-badge). |
-| [`raycast-macos-extensions`](skills/raycast-macos-extensions/SKILL.md) | Building Raycast extensions with deep macOS integration — menu-bar lifecycle, CoreAudio patterns. |
+**A published skill is a fork the moment the improvement loop touches the
+original.** If skills consolidate every night, any copy pushed to a public repo
+starts drifting that same evening. Within a month it is a confidently-worded
+snapshot of what I used to believe, with no signal that it went stale.
 
-Note what is *not* here: anything shaped by one workplace's conventions. A skill
-that assumes a particular branching model, ticket prefix, or deploy pipeline is
-a good shared skill — it just belongs in your own `~/.shared-skills`, not in a
-public repo where its premise doesn't hold. That distinction is worth making
-early, because most of the skills you write will be that kind.
+The same argument applies to *any* repo, which is why the private git repo
+behind `~/.shared-skills` is a **backup and history layer, not the distribution
+mechanism**. Skills reach other machines by sync, not by clone. A clone is a
+point-in-time copy; the whole pattern is built on there being exactly one living
+copy.
+
+`shared-skill` is here because it is different in kind: it implements the
+pattern rather than accumulating knowledge about a codebase. It is a tool, and
+tools can be versioned. The knowledge skills cannot — not usefully.
+
+If you want to publish a skill, treat it as **extracting a snapshot**, and say
+so in its README: this was true on this date, the living version is elsewhere.
+Do not treat it as distribution.
 
 ---
 

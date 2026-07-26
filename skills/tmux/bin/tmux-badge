@@ -1,9 +1,0 @@
-#!/bin/sh
-# Bump the @noti badge on this pane's tmux window (shown in the status bar).
-# Cleared by the session-window-changed hook in ~/.tmux.conf when you visit the window.
-[ -n "${TMUX_PANE:-}" ] || exit 0
-set -- $(tmux display -pt "$TMUX_PANE" '#{window_id} #{window_active} #{@noti}' 2>/dev/null) || exit 0
-[ -n "${1:-}" ] || exit 0
-# ponytail: skip the window you're looking at; no badge needed there
-[ "${2:-0}" = "1" ] && exit 0
-tmux set -wt "$1" @noti "$(( ${3:-0} + 1 ))"
