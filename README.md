@@ -174,6 +174,71 @@ the conflict gotchas. Ignore rules: [`templates/stignore-shared`](templates/stig
 
 ---
 
+## The payoff: skills that improve themselves
+
+This is the part that makes the whole thing worth building, and it only works
+because there is exactly one copy of each skill.
+
+A skill is not a document you write once. It is a document that should get
+better every time it is wrong. So put an agent on a schedule and let it do that.
+
+```mermaid
+flowchart LR
+    W["you work<br/><i>agent uses skills</i>"]
+    L["<b>capture</b><br/>after a task, write a dated<br/>learning note"]
+    S["~/.shared-skills/&lt;agent&gt;/learnings/<br/>2026-07-26-thing-i-got-wrong.md"]
+    I["<b>consolidate</b><br/>scheduled: nightly / weekly"]
+    SK["<b>the skill itself</b><br/>improved in place"]
+
+    W --> L --> S --> I --> SK
+    SK -->|"live everywhere<br/>instantly"| W
+```
+
+Two stages, deliberately separate:
+
+**Capture** runs *after a task*, while the context is still there. It writes one
+dated note per insight — `learnings/2026-07-26-slug.md` — and reuses applicable
+notes on the way in. Cheap, immediate, no judgement required about whether the
+insight matters yet.
+
+**Consolidate** runs on a schedule — mine is nightly at 22:00, weekly works too.
+It scans the day's sessions, finds *recurring* learnings, and folds them into
+the actual skill files. Then it prunes what went stale and logs what it did.
+
+### What I learned building this loop
+
+- **Promotion-first, always.** Fold recurring learnings into the real skill file.
+  The failure mode is accumulating a parallel pile of reference docs that nobody
+  loads — you end up with a second knowledge base competing with the first.
+- **Require recurrence — 2+ occurrences before promoting.** A one-off is an
+  anecdote. Promoting every single observation bloats skills until the agent
+  stops reading them.
+- **Partial adherence to an existing rule is a leak, not a rule gap.** When the
+  agent half-follows a rule, the instinct is to write a second, firmer rule.
+  Don't. You now have two rules saying the same thing and neither is followed.
+  Measure adherence to the existing one instead.
+- **Prune, or it only ever grows.** A skill that accretes and never sheds
+  becomes an unreadable wall the agent skims.
+- **Make the empty day cheap.** Most days have nothing worth promoting. If
+  detecting "nothing happened" costs a full transcript scan, the loop's dominant
+  cost is proving there was no work. Fast-path it and exit early.
+- **Guard against double runs.** The scan is the expensive part; two triggers
+  firing on the same day re-mines the same sessions for nothing.
+
+### Why this needs the shared folder
+
+Run this loop against copied skills and it becomes actively harmful: the agent
+improves the copy in `repo-a`, and the other seven copies are now not just stale
+but *divergent* — each with different fixes applied. The improvement loop
+becomes a drift engine.
+
+With one source of truth, an insight from a Monday session in one repo is live
+in all 35 consuming directories and on every machine, immediately. **Improvement
+compounds instead of fragmenting.** That is the argument for the whole pattern,
+compressed into one sentence.
+
+---
+
 ## The ssh half
 
 Once skills are identical on both machines, an agent running *on the remote*
